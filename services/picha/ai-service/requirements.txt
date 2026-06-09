@@ -1,0 +1,17 @@
+# PICHA AI Service — Python dependencies
+# Install: pip install -r requirements.txt
+
+# AutoGen
+autogen-agentchat>=0.4.0
+autogen-ext[openai]>=0.4.0
+
+# FastAPI server
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.7.0
+
+# HTTP client
+httpx>=0.27.0
+
+# Utilities
+python-dotenv>=1.0.0

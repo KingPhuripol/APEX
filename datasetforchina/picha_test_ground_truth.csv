@@ -1,0 +1,25 @@
+Filename,GroundTruth,Predicted,Confidence,Patient_ID,Age,Sex,T_Staging,N_Staging,M_Staging,Histological_Type
+ADI_ADI_3504.png,adipose,adipose,0.9986,,55,Male,T1a,N0,M0,Tubular adenocarcinoma
+ADI_ADI_3147.png,adipose,adipose,0.9962,,68,Male,T3,N3a,M0,Tubular adenocarcinoma
+ADI_ADI_1395.png,adipose,adipose,1.0,,40,Male,T4b,N2,M1,Mucinous adenocarcinoma
+DEB_DEB_1043.png,debris,debris,0.9931,,58,Female,T3,N3a,M0,Tubular adenocarcinoma
+DEB_DEB_1514.png,debris,debris,0.9998,,49,Male,T4b,N1,M0,Tubular adenocarcinoma
+DEB_DEB_1709.png,debris,normal_colon,0.5317,,69,Male,T4a,N0,M0,Tubular adenocarcinoma
+LYM_LYM_2061.png,lymphocytes,lymphocytes,0.5429,,53,Male,T4b,N0,M0,Tubular adenocarcinoma
+LYM_LYM_3343.png,lymphocytes,lymphocytes,0.5656,,59,Male,T3,N1,M0,Poorly differentiated adenocarcinoma
+LYM_LYM_3354.png,lymphocytes,lymphocytes,0.9748,,66,Female,T2,N1,M0,Tubular adenocarcinoma
+MUC_MUC_618.png,mucus,mucus,0.9987,,49,Female,T3,N0,M0,Tubular adenocarcinoma
+MUC_MUC_258.png,mucus,mucus,0.4385,,58,Female,T3,N3a,M0,Tubular adenocarcinoma
+MUC_MUC_219.png,mucus,mucus,0.6043,,70,Male,T3,N1,M0,Tubular adenocarcinoma
+MUS_MUS_3603.png,smooth_muscle,smooth_muscle,0.9992,,74,Male,T3,N1,M0,Mucinous adenocarcinoma
+MUS_MUS_232.png,smooth_muscle,smooth_muscle,0.962,,72,Male,T4b,N1,M0,Tubular adenocarcinoma
+MUS_MUS_2001.png,smooth_muscle,smooth_muscle,0.9997,,64,Male,T3,N2,M0,Tubular adenocarcinoma
+NOR_NOR_2538.png,normal_colon,normal_colon,0.9946,,74,Male,T3,N1,M0,Mucinous adenocarcinoma
+NOR_NOR_3835.png,normal_colon,normal_colon,0.5513,,67,Female,T3,N3a,M0,Tubular adenocarcinoma
+NOR_NOR_633.png,normal_colon,normal_colon,0.9499,,41,Male,T1b,N0,M0,Tubular adenocarcinoma
+STR_STR_498.png,stroma,stroma,0.9985,,63,Female,T1b,N0,M0,Tubular adenocarcinoma
+STR_STR_1991.png,stroma,stroma,0.9581,,60,Female,T3,N3a,M0,Mucinous adenocarcinoma
+STR_STR_2586.png,stroma,stroma,0.9553,,73,Female,T2,N2,M0,Tubular adenocarcinoma
+TUM_TUM_2495.png,colorectal_cancer,colorectal_cancer,0.5531,,63,Female,T4b,N2,M0,Tubular adenocarcinoma
+TUM_TUM_2212.png,colorectal_cancer,colorectal_cancer,0.9524,,62,Female,T3,N0,M0,Mucinous adenocarcinoma
+TUM_TUM_2650.png,colorectal_cancer,colorectal_cancer,0.9741,,65,Male,T3,N3a,M0,Mucinous adenocarcinoma

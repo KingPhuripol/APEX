@@ -1,0 +1,53 @@
+# ============================================================
+# SmartLiva Backend — requirements
+# Analysis engine: GPT-4o Vision API (production)
+# ============================================================
+
+# Core FastAPI and Web Framework
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+python-dotenv==1.0.0
+
+# OpenAI SDK  (Vision analysis Stage 2 + Chat)
+openai>=1.14.0
+
+# Image Processing
+pillow>=10.1.0
+
+# Local ConvNeXt inference (SmartModel v1 backbone)
+
+# HTTP Client & Async
+httpx>=0.25.2
+aiofiles>=23.2.1
+
+# Validation
+pydantic>=2.5.0
+
+# Data Handling
+numpy>=1.24.3
+scikit-learn>=1.3.2       # metrics, ECE calibration evaluation
+
+# Database (SQLite via SQLAlchemy — zero infra, upgradeable to PostgreSQL)
+sqlalchemy>=2.0.0
+
+# DICOM support — convert ultrasound DICOM files from PACS to PIL Image
+pydicom>=2.4.0
+
+# Translation fallback — googletrans 4.0.0rc1 is incompatible with modern httpx
+# Use deep-translator as a drop-in alternative if local translation is needed:
+# deep-translator>=1.11.4
+
+# Monitoring and Logging (optional, comment out to slim the image)
+structlog>=23.2.0
+sentry-sdk>=1.38.0
+
+# ===========================================================================
+# OPTIONAL — local LLM chat fallback (only if OPENAI_API_KEY is NOT set)
+# Uncomment if you want offline chat capability
+# ===========================================================================
+# transformers>=4.35.0
+# accelerate>=0.21.0
+# sentencepiece>=0.1.99
+# protobuf>=3.20.0
+opencv-python-headless>=4.8.1.78

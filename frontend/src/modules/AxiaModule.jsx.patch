@@ -1,0 +1,96 @@
+--- frontend/src/modules/AxiaModule.jsx
++++ frontend/src/modules/AxiaModule.jsx
+@@ -64,6 +64,18 @@
+   const [dragOver, setDragOver]   = useState(false);
+   const [isMockMode, setMockMode] = useState(false);
+   
++  // Demo Gallery state
++  const [demoImages, setDemoImages] = useState([]);
++
++  useEffect(() => {
++    fetch('/demo-dataset/manifest.json')
++      .then(res => res.json())
++      .then(data => {
++        if (data.axia) setDemoImages(data.axia);
++      })
++      .catch(err => console.error('Failed to load demo manifest:', err));
++  }, []);
++
+   // Viewer tools state
+   const [activeTool, setActiveTool] = useState('scroll');
+   const [showMask, setShowMask] = useState(true);
+@@ -155,6 +167,16 @@
+     setStatus('done');
+   }, []);
+ 
++  const handleDemoClick = async (url) => {
++    try {
++      const res = await fetch(url);
++      const blob = await res.blob();
++      const file = new File([blob], url.split('/').pop(), { type: blob.type || "image/png" });
++      handleFiles([file]);
++    } catch (e) {
++      console.error("Demo load failed", e);
++    }
++  };
++
+   const tone = classResult ? (TONE[classResult.type] || TONE.normal) : null;
+   const isLoading = status === 'classifying' || status === 'segmenting';
+ 
+@@ -235,32 +257,34 @@
+               </div>
+             </div>
+           ) : (
+-            <div className={`flex flex-col items-center justify-center p-8 text-center rounded-lg border-2 border-dashed transition-colors w-96 max-w-[80%] ${dragOver ? 'border-[var(--info)] bg-[var(--info-soft)]' : 'border-[#333] hover:border-[#555]'}`}>
+-              <UploadCloud className="w-10 h-10 text-[#666] mb-3" />
+-              <div className="text-sm font-medium text-[#ccc] mb-1">Drag and drop DICOM series here</div>
+-              <div className="text-xs text-[#666] mb-4">or click to browse from local PACS node</div>
+-              <input type="file" id="dicom-upload" className="hidden" multiple accept=".dcm,.dicom,.png,.jpg" onChange={(e) => handleFiles(e.target.files)} />
+-              <div className="flex space-x-3">
+-                <label htmlFor="dicom-upload" className="px-4 py-2 bg-[#222] hover:bg-[#333] text-white text-xs font-semibold rounded cursor-pointer transition-colors border border-[#444]">
+-                  Browse Files
+-                </label>
+-                <button 
+-                  onClick={async () => {
+-                    try {
+-                      const res = await fetch('https://upload.wikimedia.org/wikipedia/commons/d/d1/CT_scan_of_brain_with_intracerebral_hemorrhage.jpg');
+-                      const blob = await res.blob();
+-                      const file = new File([blob], "mock_ct_scan.jpg", { type: "image/jpeg" });
+-                      handleFiles([file]);
+-                    } catch (e) {
+-                      console.error("Mock load failed", e);
+-                    }
+-                  }}
+-                  className="px-4 py-2 bg-[var(--info-soft)] hover:bg-[var(--info)] text-[var(--info)] hover:text-white text-xs font-semibold rounded cursor-pointer transition-colors border border-[var(--info)]"
+-                >
+-                  Use Mock CT Scan
+-                </button>
++            <div className="flex flex-col items-center justify-center w-full h-full">
++              <div className={`flex flex-col items-center justify-center p-8 text-center rounded-lg border-2 border-dashed transition-colors w-96 max-w-[80%] ${dragOver ? 'border-[var(--info)] bg-[var(--info-soft)]' : 'border-[#333] hover:border-[#555]'}`}>
++                <UploadCloud className="w-10 h-10 text-[#666] mb-3" />
++                <div className="text-sm font-medium text-[#ccc] mb-1">Drag and drop DICOM series here</div>
++                <div className="text-xs text-[#666] mb-4">or click to browse from local PACS node</div>
++                <input type="file" id="dicom-upload" className="hidden" multiple accept=".dcm,.dicom,.png,.jpg" onChange={(e) => handleFiles(e.target.files)} />
++                <div className="flex space-x-3">
++                  <label htmlFor="dicom-upload" className="px-4 py-2 bg-[#222] hover:bg-[#333] text-white text-xs font-semibold rounded cursor-pointer transition-colors border border-[#444]">
++                    Browse Files
++                  </label>
++                </div>
+               </div>
++              
++              {/* Demo Gallery */}
++              {demoImages.length > 0 && (
++                <div className="mt-8 w-[90%] max-w-2xl">
++                  <div className="text-xs text-[#888] font-bold uppercase tracking-wider mb-3 text-center">Or select a demo case</div>
++                  <div className="grid grid-cols-6 gap-3">
++                    {demoImages.map((url, i) => (
++                      <div key={i} onClick={() => handleDemoClick(url)} className="cursor-pointer border-2 border-[#333] hover:border-[var(--info)] rounded overflow-hidden aspect-square transition-all hover:scale-105 bg-black">
++                        <img src={url} className="w-full h-full object-cover filter grayscale" alt="Demo Case" />
++                      </div>
++                    ))}
++                  </div>
++                </div>
++              )}
+             </div>
+           )}
+         </div>

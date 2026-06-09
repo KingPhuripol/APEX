@@ -1,0 +1,26 @@
+# ML Models
+*.pth
+*.pt
+*.onnx
+*.h5
+*.weights
+*.pb
+*.ckpt
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Node/Frontend
+node_modules/
+.next/
+build/
+dist/
+
+# Logs and DB
+*.log
+*.sqlite3
+*.db
+.DS_Store

@@ -1,0 +1,26 @@
+{
+  "axia": [
+    "/demo-dataset/axia/sample01.png",
+    "/demo-dataset/axia/sample02.png",
+    "/demo-dataset/axia/sample03.png",
+    "/demo-dataset/axia/sample04.png",
+    "/demo-dataset/axia/sample05.png",
+    "/demo-dataset/axia/sample06.png"
+  ],
+  "picha": [
+    "/demo-dataset/picha/sample01.png",
+    "/demo-dataset/picha/sample02.png",
+    "/demo-dataset/picha/sample03.png",
+    "/demo-dataset/picha/sample04.png",
+    "/demo-dataset/picha/sample05.png",
+    "/demo-dataset/picha/sample06.png"
+  ],
+  "smartliva": [
+    "/demo-dataset/smartliva/sample01.jpg",
+    "/demo-dataset/smartliva/sample02.jpg",
+    "/demo-dataset/smartliva/sample03.jpg",
+    "/demo-dataset/smartliva/sample04.jpg",
+    "/demo-dataset/smartliva/sample05.jpg",
+    "/demo-dataset/smartliva/sample06.jpg"
+  ]
+}

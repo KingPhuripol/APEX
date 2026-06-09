@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>APEX Mobile Clinical Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', '"Noto Sans Thai"', 'system-ui', 'sans-serif'],
+          mono: ['"IBM Plex Mono"', '"Noto Sans Thai"', 'ui-monospace', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  :root {
+    --bg: #070b12;
+    --surface: #111c34;
+    --line: #1d335c;
+    --accent: #06b6d4;
+    --accent-wash: rgba(6,182,212,.14);
+    --accent-line: rgba(6,182,212,.35);
+  }
+  * { -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; background: #04060b; }
+  body {
+    font-family: 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
+    display: grid; place-items: center; min-height: 100vh;
+    color: #fff; overflow: hidden;
+    background:
+      radial-gradient(60% 50% at 20% 0%, #0d1730 0%, transparent 60%),
+      radial-gradient(50% 50% at 90% 100%, #14122b 0%, transparent 60%),
+      #04060b;
+  }
+  .mono { font-family: 'IBM Plex Mono', 'Noto Sans Thai', monospace; }
+  /* Thai needs more vertical breathing room for stacked vowels/tone marks */
+  :lang(th), .th { line-height: 1.65; }
+  .th-tight { line-height: 1.5; }
+  /* Thai has no inter-word spaces — allow it to break so flex children wrap instead of overflowing */
+  .th, .th-tight { overflow-wrap: anywhere; word-break: break-word; }
+  .tnum { font-variant-numeric: tabular-nums; }
+  .noscroll::-webkit-scrollbar { width: 0; height: 0; }
+  .noscroll { scrollbar-width: none; }
+
+  /* ---- phone frame ---- */
+  .phone-frame {
+    position: relative;
+    width: 390px; height: 844px;
+    max-height: 96vh;
+    border-radius: 52px;
+    padding: 12px;
+    background: linear-gradient(155deg, #2a2f3a, #0c0f16 55%, #1a1d26);
+    box-shadow: 0 0 0 2px #34394a, 0 40px 90px -20px rgba(0,0,0,.8), 0 0 80px -30px var(--accent-wash);
+  }
+  @media (max-height: 880px) { .phone-frame { transform: scale(.92); } }
+  @media (max-height: 800px) { .phone-frame { transform: scale(.84); } }
+  @media (max-height: 730px) { .phone-frame { transform: scale(.74); } }
+  .phone-screen {
+    position: relative; width: 100%; height: 100%;
+    border-radius: 42px; overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+  }
+  /* dynamic island */
+  .phone-screen::before {
+    content: ''; position: absolute; top: 9px; left: 50%; transform: translateX(-50%);
+    width: 108px; height: 30px; background: #000; border-radius: 18px; z-index: 50;
+  }
+
+  .glass-strong { background: rgba(10,16,28,.78); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); }
+  .card-surface { background: linear-gradient(180deg, rgba(17,28,52,.7), rgba(13,21,40,.6)); backdrop-filter: blur(8px); }
+  .press { transition: transform .12s cubic-bezier(.2,.8,.2,1), background .2s, border-color .2s, opacity .2s; }
+  .press:active { transform: scale(.97); }
+
+  /* ---- animations ---- */
+  @keyframes dotPulse { 0%,100% { box-shadow: 0 0 0 0 var(--dot); } 70% { box-shadow: 0 0 0 7px transparent; } }
+  .dot-pulse { animation: dotPulse 1.8s ease-out infinite; }
+
+  @keyframes ringPulse { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(1.35); opacity: 0; } }
+  .ring-pulse { animation: ringPulse 1.8s ease-out infinite; box-shadow: 0 0 0 1px var(--rc); }
+
+  @keyframes shutterPing { 0% { transform: scale(.8); opacity: .8; } 100% { transform: scale(1.5); opacity: 0; } }
+  .shutter-ping { animation: shutterPing 2.2s ease-out infinite; }
+
+  @keyframes critSheen { 0% { background-position: -150% 0; } 100% { background-position: 250% 0; } }
+  .crit-sheen { background: linear-gradient(110deg, transparent 30%, rgba(239,68,68,.08) 50%, transparent 70%); background-size: 200% 100%; animation: critSheen 4s ease-in-out infinite; }
+
+  @keyframes spinSlow { to { transform: rotate(360deg); } }
+  .spin-slow { animation: spinSlow 1.1s linear infinite; display: inline-grid; }
+
+  @keyframes shimmerText { 0%,100% { opacity: .45; } 50% { opacity: .95; } }
+  .shimmer-text { animation: shimmerText 1.4s ease-in-out infinite; }
+
+  /* segmentation overlay */
+  @keyframes segPulse { 0%,100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.12); opacity: 1; } }
+  .seg-blob { animation: segPulse 1.5s ease-in-out infinite; }
+  @keyframes segRing { 0% { transform: scale(.7); opacity: .9; } 100% { transform: scale(1.8); opacity: 0; } }
+  .seg-ring { animation: segRing 1.8s ease-out infinite; }
+
+  /* scan sweep */
+  @keyframes sweep { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+  .scan-sweep::after {
+    content: ''; position: absolute; left: 0; right: 0; height: 40%;
+    background: linear-gradient(180deg, transparent, var(--accent-wash) 60%, transparent);
+    animation: sweep 2.4s ease-in-out infinite;
+  }
+
+  /* typing dots */
+  @keyframes typingBob { 0%,60%,100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-4px); opacity: 1; } }
+  .typing-dot { animation: typingBob 1.2s ease-in-out infinite; }
+
+  /* entrance */
+  @keyframes stagger { from { transform: translateY(10px); } to { transform: translateY(0); } }
+  .stagger { animation: stagger .42s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes tabEnter { from { transform: translateY(8px) scale(.995); } to { transform: none; } }
+  .tab-enter { animation: tabEnter .34s cubic-bezier(.16,1,.3,1); }
+
+  @keyframes checkPop { 0% { transform: scale(0) rotate(-30deg); } 60% { transform: scale(1.3); } 100% { transform: scale(1); } }
+  .check-pop { display: inline-grid; animation: checkPop .4s cubic-bezier(.16,1.4,.3,1) both; }
+
+  /* clinical motion (default): kill the looping showpiece effects, keep only essential critical pulse */
+  [data-motion="clinical"] .crit-sheen,
+  [data-motion="clinical"] .scan-sweep::after,
+  [data-motion="clinical"] .shutter-ping,
+  [data-motion="clinical"] .seg-ring,
+  [data-motion="clinical"] .ring-pulse { animation: none; opacity: .22; }
+  [data-motion="clinical"] .dot-pulse:not(.keep-pulse) { animation: none; }
+
+  input::placeholder { color: rgba(255,255,255,.5); }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="js/icons.jsx"></script>
+  <script type="text/babel" src="js/data.jsx"></script>
+  <script type="text/babel" src="js/tweaks-panel.jsx"></script>
+  <script type="text/babel" src="js/shell.jsx"></script>
+  <script type="text/babel" src="js/tab_alerts.jsx"></script>
+  <script type="text/babel" src="js/tab_scan.jsx"></script>
+  <script type="text/babel" src="js/tab_copilot.jsx"></script>
+  <script type="text/babel" src="js/main.jsx"></script>
+</body>
+</html>

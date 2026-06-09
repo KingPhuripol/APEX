@@ -1,0 +1,36 @@
+Filename,Task,GroundTruth_Label
+fibrosis_test_F0_1.jpg,Liver Fibrosis,F0
+fibrosis_test_F0_2.jpg,Liver Fibrosis,F0
+fibrosis_test_F0_3.jpg,Liver Fibrosis,F0
+fibrosis_test_F0_4.jpg,Liver Fibrosis,F0
+fibrosis_test_F0_5.jpg,Liver Fibrosis,F0
+fibrosis_test_F1_1.jpg,Liver Fibrosis,F1
+fibrosis_test_F1_2.jpg,Liver Fibrosis,F1
+fibrosis_test_F1_3.jpg,Liver Fibrosis,F1
+fibrosis_test_F1_4.jpg,Liver Fibrosis,F1
+fibrosis_test_F1_5.jpg,Liver Fibrosis,F1
+fibrosis_test_F2_1.jpg,Liver Fibrosis,F2
+fibrosis_test_F2_2.jpg,Liver Fibrosis,F2
+fibrosis_test_F2_3.jpg,Liver Fibrosis,F2
+fibrosis_test_F2_4.jpg,Liver Fibrosis,F2
+fibrosis_test_F2_5.jpg,Liver Fibrosis,F2
+fibrosis_test_F3_1.jpg,Liver Fibrosis,F3
+fibrosis_test_F3_2.jpg,Liver Fibrosis,F3
+fibrosis_test_F3_3.jpg,Liver Fibrosis,F3
+fibrosis_test_F3_4.jpg,Liver Fibrosis,F3
+fibrosis_test_F3_5.jpg,Liver Fibrosis,F3
+fibrosis_test_F4_1.jpg,Liver Fibrosis,F4
+fibrosis_test_F4_2.jpg,Liver Fibrosis,F4
+fibrosis_test_F4_3.jpg,Liver Fibrosis,F4
+fibrosis_test_F4_4.jpg,Liver Fibrosis,F4
+fibrosis_test_F4_5.jpg,Liver Fibrosis,F4
+fattyliver_test_Class_0_1.jpg,Fatty Liver,Normal
+fattyliver_test_Class_0_2.jpg,Fatty Liver,Normal
+fattyliver_test_Class_0_3.jpg,Fatty Liver,Normal
+fattyliver_test_Class_0_4.jpg,Fatty Liver,Normal
+fattyliver_test_Class_0_5.jpg,Fatty Liver,Normal
+fattyliver_test_Class_1_1.jpg,Fatty Liver,Fatty Liver
+fattyliver_test_Class_1_2.jpg,Fatty Liver,Fatty Liver
+fattyliver_test_Class_1_3.jpg,Fatty Liver,Fatty Liver
+fattyliver_test_Class_1_4.jpg,Fatty Liver,Fatty Liver
+fattyliver_test_Class_1_5.jpg,Fatty Liver,Fatty Liver

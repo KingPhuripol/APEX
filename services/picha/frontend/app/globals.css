@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+/* ── Class-based dark mode (toggles .dark on <html>) ──────────── */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Grid background pattern ──────────────────────────────────── */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ── Glass card (dark mode surfaces) ─────────────────────────── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ── Print styles ─────────────────────────────────────────────── */
+@media print {
+  aside {
+    display: none !important;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+  * {
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

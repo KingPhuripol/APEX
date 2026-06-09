@@ -1,0 +1,197 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --font-thai: 'Noto Sans Thai', 'Inter', sans-serif;
+  
+  --color-slate-850: #1a2235;
+  --color-slate-950: #0d1117;
+}
+
+:root {
+  /* True Clinical Dark Mode */
+  --bg: #121212;
+  --surface: #1E1E1E;
+  --surface-2: #252526;
+  --surface-3: #2D2D30;
+  
+  --line: #333333;
+  --line-strong: #444444;
+  
+  --text: #E0E0E0;
+  --text-2: #CCCCCC;
+  --muted: #9E9E9E;
+  --dim: #757575;
+
+  /* Strict Semantic Colors */
+  --danger: #ef4444; /* Red - Critical */
+  --danger-soft: rgba(239, 68, 68, 0.1);
+  --warn: #f59e0b; /* Amber - Warning/Review */
+  --warn-soft: rgba(245, 158, 11, 0.1);
+  --ok: #10b981; /* Emerald - Normal/Clear */
+  --ok-soft: rgba(16, 185, 129, 0.1);
+  --info: #3b82f6; /* Blue - Informational */
+  --info-soft: rgba(59, 130, 246, 0.1);
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.30);
+}
+
+:root[data-theme="light"] {
+  /* Clinical Light Mode */
+  --bg: #eef1f5;
+  --surface: #ffffff;
+  --surface-2: #f6f8fb;
+  --surface-3: #eaeef3;
+  
+  --line: #d6dde7;
+  --line-strong: #b9c3d2;
+  
+  --text: #0a1322;
+  --text-2: #2f3b53;
+  --muted: #4f5b75;
+  --dim: #7a849a;
+
+  --danger: #b81f25;
+  --danger-soft: #fde8e9;
+  --warn: #92480a;
+  --warn-soft: #fdf1de;
+  --ok: #066c44;
+  --ok-soft: #def4e8;
+  --info: #154f8a;
+  --info-soft: #e0eaf6;
+}
+
+html, body { 
+  background: var(--bg); 
+  color: var(--text); 
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11", "tnum";
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-size: 14px;
+}
+
+#root {
+  height: 100%;
+}
+
+.font-thai {
+  font-family: var(--font-thai);
+}
+
+.glass-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+.glass-button {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  transition: background 0.2s;
+}
+
+.glass-button:hover {
+  background: var(--surface-3);
+}
+
+/* Global focus ring (keyboard nav) */
+*:focus { outline: none; }
+*:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 6px;
+  transition: box-shadow 80ms;
+}
+
+/* Sleek scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* CT/US/Path viewer base — deep black for contrast */
+.viewer-dark {
+  background: #000000;
+  color: #ffffff;
+}
+
+/* Subtle grid (for clinical viewers only) */
+.viewer-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Animations */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
+/* AXIA CT Laser Scanner Animation */
+@keyframes ct-scan {
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.ct-laser-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--info);
+  box-shadow: 0 0 10px var(--info), 0 0 20px var(--info);
+  animation: ct-scan 2.5s ease-in-out infinite alternate;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Radar Ping for Hemorrhage */
+@keyframes radar-ping {
+  0% { transform: scale(0.5); opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+.radar-ping-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid var(--danger);
+  animation: radar-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+/* Dashboard Glow Card Effects */
+.ecosystem-card {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.ecosystem-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+}
+.ecosystem-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, transparent, var(--glow-color, rgba(255,255,255,0.1)), transparent);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.ecosystem-card:hover::before {
+  opacity: 1;
+}

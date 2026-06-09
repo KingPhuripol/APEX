@@ -1,0 +1,61 @@
+# Use Python 3.11 slim image for production
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    DEBIAN_FRONTEND=noninteractive
+
+# Set work directory
+WORKDIR /app
+
+# Install system dependencies (minimal set for pure API mode)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        curl \
+        libgl1 \
+        libglib2.0-0 \
+        && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# Create non-root user for security
+RUN adduser --disabled-password --gecos '' --shell /bin/bash smartliva \
+    && chown -R smartliva:smartliva /app
+USER smartliva
+
+# Copy application code
+COPY --chown=smartliva:smartliva . .
+
+# Create necessary directories
+RUN mkdir -p logs models data reports temp
+
+# Download and cache AI models (optional - can be done at runtime)
+# RUN python -c "
+# import torch
+# from transformers import AutoModelForImageClassification, AutoImageProcessor
+# import open_clip
+# 
+# # Cache CLIP model
+# model, _, preprocess = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
+# 
+# # Cache MaxViT model  
+# processor = AutoImageProcessor.from_pretrained('timm/maxvit_large_tf_224.in1k')
+# model = AutoModelForImageClassification.from_pretrained('timm/maxvit_large_tf_224.in1k', num_labels=7)
+# print('Models cached successfully')
+# "
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Expose port
+EXPOSE 8000
+
+# Run the application
+# workers=1: SQLite does not support concurrent writes from multiple processes.
+# Upgrade DATABASE_URL to PostgreSQL before increasing workers.
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
