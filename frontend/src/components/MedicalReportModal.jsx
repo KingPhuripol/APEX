@@ -6,6 +6,7 @@ import {
   User,
   Calendar,
   FileText,
+  ImageIcon,
 } from "lucide-react";
 
 export default function MedicalReportModal({
@@ -14,6 +15,8 @@ export default function MedicalReportModal({
   analysisResult,
   patientId,
   moduleName,
+  imageUrl,
+  aiRemark,
 }) {
   const printRef = useRef(null);
 
@@ -135,6 +138,52 @@ export default function MedicalReportModal({
                 </div>
               </div>
             </div>
+
+            {/* AI-Analyzed Image */}
+            {imageUrl && (
+              <div className="space-y-2">
+                <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200 pb-2 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4" />
+                  AI-Analyzed Image
+                </h3>
+                <div className="relative inline-block w-full">
+                  <img
+                    src={imageUrl}
+                    alt="AI-analyzed medical image"
+                    className="w-full max-h-72 object-contain rounded-lg border border-gray-300 bg-black"
+                    style={{ display: "block" }}
+                  />
+                  {/* AI finding badge overlay */}
+                  {aiRemark?.label && (
+                    <div
+                      className="absolute top-2 left-2 flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-bold text-white shadow-lg"
+                      style={{ backgroundColor: aiRemark.color || "#7c3aed" }}
+                    >
+                      <span>AI Finding:</span>
+                      <span>{aiRemark.label}</span>
+                      {aiRemark.confidence && (
+                        <span className="ml-1 opacity-90">
+                          ({Math.round(aiRemark.confidence * 100)}%)
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {/* Remark lines below image */}
+                {aiRemark?.notes?.length > 0 && (
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1">
+                    {aiRemark.notes.map((n, i) => (
+                      <p key={i} className="text-xs text-gray-700 leading-snug">
+                        <span className="font-semibold text-gray-500 mr-1">
+                          {i === 0 ? "⬤" : "◦"}
+                        </span>
+                        {n}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Main Clinical Content */}
             <div className="space-y-6">

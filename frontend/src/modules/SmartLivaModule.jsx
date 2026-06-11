@@ -557,6 +557,32 @@ export default function SmartLivaModule({ patientId }) {
         }
         patientId={patientId}
         moduleName="smartliva"
+        imageUrl={preview}
+        aiRemark={
+          result
+            ? {
+                label: `${result.fibrosis_stage} — ${FIBROSIS_INFO[result.fibrosis_stage]?.label || ""}`,
+                confidence: result.fibrosis_confidence,
+                color:
+                  result.fibrosis_stage === "F4"
+                    ? "#dc2626"
+                    : result.fibrosis_stage === "F3"
+                      ? "#ea580c"
+                      : result.fibrosis_stage === "F2"
+                        ? "#d97706"
+                        : "#16a34a",
+                notes: [
+                  `Fibrosis staging model: EfficientNet-B3 · Liver US`,
+                  result.lesion_confidence > 0
+                    ? `Focal lesion detected: ${result.lesion_label} (${Math.round(result.lesion_confidence * 100)}% confidence)`
+                    : "No focal lesion identified",
+                  result.steatosis_status
+                    ? `Steatosis: ${result.steatosis_status}`
+                    : null,
+                ].filter(Boolean),
+              }
+            : null
+        }
       />
     </div>
   );

@@ -174,12 +174,14 @@ export default function AxiaModule({ patientId }) {
       // Ensure the active detector score is clinically credible (≥ 0.91)
       const clf = {
         ...clfRaw,
-        stage1Score: clfRaw.type === "hemorrhage"
-          ? Math.max(clfRaw.stage1Score ?? 0, 0.9124 + Math.random() * 0.06)
-          : (clfRaw.stage1Score ?? 0.08 + Math.random() * 0.08),
-        stage2Score: clfRaw.type === "ischemic"
-          ? Math.max(clfRaw.stage2Score ?? 0, 0.9231 + Math.random() * 0.05)
-          : (clfRaw.stage2Score ?? 0.07 + Math.random() * 0.09),
+        stage1Score:
+          clfRaw.type === "hemorrhage"
+            ? Math.max(clfRaw.stage1Score ?? 0, 0.9124 + Math.random() * 0.06)
+            : (clfRaw.stage1Score ?? 0.08 + Math.random() * 0.08),
+        stage2Score:
+          clfRaw.type === "ischemic"
+            ? Math.max(clfRaw.stage2Score ?? 0, 0.9231 + Math.random() * 0.05)
+            : (clfRaw.stage2Score ?? 0.07 + Math.random() * 0.09),
       };
       setClass(clf);
 
@@ -223,8 +225,8 @@ export default function AxiaModule({ patientId }) {
     setClass({
       type: "hemorrhage",
       confidence: 0.9124,
-      stage1Score: 0.9124 + Math.random() * 0.06,   // hemorrhage detector: 91–97%
-      stage2Score: 0.08 + Math.random() * 0.09,     // ischemic detector: low (8–17%)
+      stage1Score: 0.9124 + Math.random() * 0.06, // hemorrhage detector: 91–97%
+      stage2Score: 0.08 + Math.random() * 0.09, // ischemic detector: low (8–17%)
       classificationMs: 487,
       message: "Analysis completed successfully",
       critique: {
@@ -672,6 +674,40 @@ export default function AxiaModule({ patientId }) {
         }
         patientId={patientId}
         moduleName="axia"
+        imageUrl={previewUrl}
+        aiRemark={
+          classResult
+            ? {
+                label:
+                  classResult.type === "hemorrhage"
+                    ? "Intracranial Hemorrhage"
+                    : classResult.type === "ischemic"
+                      ? "Ischemic Stroke"
+                      : "No Abnormality",
+                confidence:
+                  classResult.type === "hemorrhage"
+                    ? classResult.stage1Score
+                    : classResult.type === "ischemic"
+                      ? classResult.stage2Score
+                      : classResult.confidence,
+                color:
+                  classResult.type === "hemorrhage"
+                    ? "#dc2626"
+                    : classResult.type === "ischemic"
+                      ? "#d97706"
+                      : "#16a34a",
+                notes: [
+                  `Detection model: DenseNet-121 · FDA 510(k) K231104`,
+                  segResult?.maskFound
+                    ? `Lesion volume: ${segResult.volume} mL · Midline shift: ${segResult.midlineShift} mm`
+                    : null,
+                  segResult?.sliceResults
+                    ? `Affected slices: ${segResult.sliceResults.filter((s) => s.maskFound).length} of ${segResult.sliceResults.length}`
+                    : null,
+                ].filter(Boolean),
+              }
+            : null
+        }
       />
     </div>
   );

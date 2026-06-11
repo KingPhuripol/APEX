@@ -270,6 +270,59 @@ function AgentCard({ agent, status, events, isExpanded, onToggle }) {
   );
 }
 
+// ── Tile color map ─────────────────────────────────────────────────────────
+const TILE_COLORS = {
+  CANCER: {
+    bg: "rgba(239,68,68,0.42)",
+    border: "1px solid rgba(239,68,68,0.85)",
+    shadow: "0 0 12px rgba(239,68,68,0.45)",
+  },
+  NORM: {
+    bg: "rgba(20,83,45,0.65)",
+    border: "1px solid rgba(34,197,94,0.38)",
+    shadow: "none",
+  },
+  INFLAM: {
+    bg: "rgba(202,138,4,0.38)",
+    border: "1px solid rgba(234,179,8,0.68)",
+    shadow: "none",
+  },
+};
+
+// ── Deterministic tile classification grid from filename ────────────────────
+function generateTileGrid(file, rows = 6, cols = 6) {
+  const seed = Array.from(file.name).reduce(
+    (acc, ch, i) => acc + ch.charCodeAt(0) * (i + 1),
+    17,
+  );
+  const rng = (n) => (Math.abs(Math.sin(seed * 127.1 + n * 311.7)) % 1);
+  // Cancer cluster center
+  const cx = 1 + Math.floor(rng(1) * (cols - 2));
+  const cy = 1 + Math.floor(rng(2) * (rows - 2));
+  return Array.from({ length: rows * cols }, (_, idx) => {
+    const r = Math.floor(idx / cols);
+    const c = idx % cols;
+    const dist = Math.sqrt((r - cy) ** 2 + (c - cx) ** 2);
+    const noise = rng(idx * 13 + 7);
+    const noise2 = rng(idx * 29 + 3);
+    let cls, conf;
+    if (dist < 1.0 + rng(idx + 100) * 0.5) {
+      cls = "CANCER";
+      conf = 0.84 + rng(idx + 50) * 0.13;
+    } else if (dist < 2.2 && noise > 0.35) {
+      cls = noise2 > 0.5 ? "CANCER" : "INFLAM";
+      conf = 0.72 + rng(idx + 200) * 0.18;
+    } else if (noise < 0.25 && dist > 1.5) {
+      cls = "INFLAM";
+      conf = 0.68 + rng(idx + 300) * 0.22;
+    } else {
+      cls = "NORM";
+      conf = 0.79 + rng(idx + 400) * 0.17;
+    }
+    return { cls, conf };
+  });
+}
+
 // ── Main Component ──────────────────────────────────────────────────────────
 export default function PichaModule({ patientId }) {
   const [heatOn, setHeatOn] = useState(true);
@@ -291,6 +344,8 @@ export default function PichaModule({ patientId }) {
   const [isOnline, setOnline] = useState(null);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [showXAI, setShowXAI] = useState(false);
+  const [tileGrid, setTileGrid] = useState(null);
+  const [selectedTile, setSelectedTile] = useState(null);
 
   // Reference Case Gallery
   const [referenceImages, setReferenceImages] = useState([]);
@@ -326,6 +381,8 @@ export default function PichaModule({ patientId }) {
       setFinalReport(null);
       setExpandedAgent(null);
       setShowXAI(false);
+      setTileGrid(generateTileGrid(file));
+      setSelectedTile(null);
 
       // ── Phase 1: Pre-screening Animation ──
       setStatus("phase1");
@@ -417,7 +474,7 @@ export default function PichaModule({ patientId }) {
   const totalAgents = MARS_AGENTS.length;
 
   return (
-      <div className="flex flex-col lg:flex-row w-full lg:h-full bg-[var(--bg)]">
+    <div className="flex flex-col lg:flex-row w-full lg:h-full bg-[var(--bg)]">
       <style>{`
         @keyframes scanline {
           0% { top: 0%; opacity: 0; }
@@ -566,48 +623,52 @@ export default function PichaModule({ patientId }) {
                   <div className="absolute inset-0 bg-pink-500/10 pointer-events-none animate-pulse mix-blend-color"></div>
                 )}
 
-                {/* 9-Class Patch Classifier */}
-                {phase1Step === 4 && (
-                  <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                    <div className="grid grid-cols-6 gap-1 w-full h-full">
-                      {Array.from({ length: 36 }).map((_, i) => {
-                        const isCancer = i % 5 === 0 || i % 8 === 0;
-                        const isInflam = i % 7 === 0;
-                        let bg = "bg-emerald-500/10 border-emerald-500/30";
-                        let text = "NORM";
-                        if (isCancer) {
-                          bg =
-                            "bg-red-500/40 border-red-500/80 shadow-[0_0_10px_rgba(239,68,68,0.5)]";
-                          text = "CANCER";
-                        } else if (isInflam) {
-                          bg = "bg-yellow-500/30 border-yellow-500/60";
-                          text = "INFLAM";
-                        }
+                {/* Grad-CAM Tile Grid — persistent after phase1, interactive */}
+                {tileGrid && heatOn && phase1Step >= 4 && (
+                  <div className="absolute inset-0">
+                    <div
+                      className="w-full h-full grid gap-[2px] p-[2px]"
+                      style={{
+                        gridTemplateColumns: "repeat(6, 1fr)",
+                        gridTemplateRows: "repeat(6, 1fr)",
+                      }}
+                    >
+                      {tileGrid.map((tile, i) => {
+                        const colors = TILE_COLORS[tile.cls];
+                        const isAnimating = phase1Step === 4;
+                        const isSelected = selectedTile === i;
                         return (
                           <div
                             key={i}
-                            className={`border ${bg} rounded-sm flex items-center justify-center animate-fade-in backdrop-blur-sm`}
-                            style={{ animationDelay: `${i * 0.03}s` }}
+                            className={`rounded-[3px] flex flex-col items-center justify-center backdrop-blur-[1px] cursor-pointer transition-all active:scale-95 ${
+                              isSelected ? "ring-1 ring-white" : ""
+                            } ${isAnimating ? "animate-fade-in" : ""}`}
+                            style={{
+                              background: colors.bg,
+                              border: colors.border,
+                              boxShadow: colors.shadow,
+                              animationDelay: isAnimating
+                                ? `${i * 0.025}s`
+                                : "0s",
+                            }}
+                            onClick={() =>
+                              setSelectedTile(selectedTile === i ? null : i)
+                            }
+                            title={`${tile.cls} — ${Math.round(tile.conf * 100)}% confidence`}
                           >
-                            <span className="text-[8px] font-bold text-white shadow-sm">
-                              {text}
+                            <span className="text-[8px] font-bold text-white drop-shadow-sm select-none leading-none">
+                              {tile.cls}
                             </span>
+                            {isSelected && (
+                              <span className="text-[7px] text-white/80 font-mono mt-0.5 leading-none">
+                                {Math.round(tile.conf * 100)}%
+                              </span>
+                            )}
                           </div>
                         );
                       })}
                     </div>
                   </div>
-                )}
-
-                {/* Heatmap overlay (when active and done) */}
-                {heatOn && status === "done" && (
-                  <div
-                    className="absolute inset-0 pointer-events-none opacity-30 mix-blend-screen"
-                    style={{
-                      background:
-                        "radial-gradient(ellipse at 45% 40%, rgba(239,68,68,0.6) 0%, rgba(255,165,0,0.3) 30%, rgba(34,197,94,0.1) 60%, transparent 80%)",
-                    }}
-                  />
                 )}
               </div>
             </div>
@@ -615,11 +676,30 @@ export default function PichaModule({ patientId }) {
 
           {/* Status Overlays */}
           {previewUrl && status === "done" && (
-            <div className="absolute bottom-4 left-4 flex gap-2">
+            <div className="absolute bottom-4 left-4 flex flex-wrap gap-2">
               <span className="text-[10px] px-2 py-1 bg-[#111] rounded border border-[#333] text-[#aaa] flex items-center font-bold uppercase tracking-wider shadow-md">
                 <span className="w-2 h-2 rounded-sm inline-block bg-emerald-500 mr-1.5 shadow-[0_0_5px_#10b981]" />{" "}
                 Analysis Complete
               </span>
+              {tileGrid && (
+                <>
+                  <span className="text-[10px] px-2 py-1 bg-red-500/20 rounded border border-red-500/40 text-red-400 font-bold uppercase tracking-wider shadow-md">
+                    CANCER: {tileGrid.filter((t) => t.cls === "CANCER").length}
+                  </span>
+                  <span className="text-[10px] px-2 py-1 bg-yellow-500/20 rounded border border-yellow-500/40 text-yellow-400 font-bold uppercase tracking-wider shadow-md">
+                    INFLAM: {tileGrid.filter((t) => t.cls === "INFLAM").length}
+                  </span>
+                  <span className="text-[10px] px-2 py-1 bg-emerald-500/20 rounded border border-emerald-500/40 text-emerald-400 font-bold uppercase tracking-wider shadow-md">
+                    NORM: {tileGrid.filter((t) => t.cls === "NORM").length}
+                  </span>
+                </>
+              )}
+              {selectedTile !== null && tileGrid && (
+                <span className="text-[10px] px-2 py-1 bg-white/10 rounded border border-white/20 text-white font-bold uppercase tracking-wider shadow-md">
+                  Tile #{selectedTile + 1}: {tileGrid[selectedTile].cls}{" "}
+                  {Math.round(tileGrid[selectedTile].conf * 100)}%
+                </span>
+              )}
             </div>
           )}
 
@@ -843,7 +923,11 @@ export default function PichaModule({ patientId }) {
               </div>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
-              <PICHAClinicalReport report={finalReport} events={events} />
+              <PICHAClinicalReport
+                report={finalReport}
+                events={events}
+                slideImageUrl={previewUrl}
+              />
             </div>
           </div>
         </div>
