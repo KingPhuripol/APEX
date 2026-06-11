@@ -489,5 +489,5 @@ function generatePatients(count = 9988) {
 // ── Combine original + generated patients ────────────────────────────────────
 export const ALL_PATIENTS = [
   ...MOCK_PATIENTS.map((p) => ({ ...p, hospitalCode: "KKH", hospitalName: "Khon Kaen" })),
-  ...generatePatients(9988),
+  ...generatePatients(14555),
 ];
