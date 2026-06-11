@@ -3,7 +3,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /w
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential git && rm -rf /var/lib/apt/lists/*
 COPY pyproject.toml ./
-RUN pip install --no-cache-dir --upgrade pip && pip wheel --no-cache-dir --wheel-dir /wheels -e .
+RUN pip install --default-timeout=1000 --retries=10 --no-cache-dir --upgrade pip && pip wheel --default-timeout=1000 --retries=10 --no-cache-dir --wheel-dir /wheels -e .
 
 FROM python:3.11-slim AS runtime
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1

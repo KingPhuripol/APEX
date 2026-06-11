@@ -1,23 +1,24 @@
-const express = require('express');
-const cors = require('cors');
-const sqlite3 = require('sqlite3').verbose();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const express = require("express");
+const cors = require("cors");
+const sqlite3 = require("sqlite3").verbose();
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const PORT = 3001;
-const JWT_SECRET = 'apex-clinical-super-secret-key-2026'; // In production, use env variable
+const JWT_SECRET =
+  process.env.JWT_SECRET || "apex-clinical-super-secret-key-2026"; // Use JWT_SECRET env variable in production
 
 app.use(cors());
 app.use(express.json());
 
 // Initialize SQLite DB
-const db = new sqlite3.Database('./apex_auth.db', (err) => {
+const db = new sqlite3.Database("./apex_auth.db", (err) => {
   if (err) {
-    console.error('Error connecting to database:', err);
+    console.error("Error connecting to database:", err);
   } else {
-    console.log('Connected to SQLite database.');
-    
+    console.log("Connected to SQLite database.");
+
     // Create users table and seed default admin
     db.serialize(() => {
       db.run(`
@@ -31,28 +32,23 @@ const db = new sqlite3.Database('./apex_auth.db', (err) => {
       `);
 
       // Seed default account
-      db.get(`SELECT id FROM users WHERE id = ?`, ['admin'], (err, row) => {
+      db.get(`SELECT id FROM users WHERE id = ?`, ["smartlab"], (err, row) => {
         if (!row) {
           const salt = bcrypt.genSaltSync(10);
-          const hash = bcrypt.hashSync('apex2026', salt);
-          
-          const stmt = db.prepare('INSERT INTO users (id, password_hash, name, role, department) VALUES (?, ?, ?, ?, ?)');
-          stmt.run('admin', hash, 'Dr. Sarah Chen', 'Chief Medical Officer', 'Executive');
+          const hash = bcrypt.hashSync("smartlab888", salt);
+
+          const stmt = db.prepare(
+            "INSERT INTO users (id, password_hash, name, role, department) VALUES (?, ?, ?, ?, ?)",
+          );
+          stmt.run(
+            "smartlab",
+            hash,
+            "Dr. Sarah Chen",
+            "Chief Medical Officer",
+            "Clinical Pathology",
+          );
           stmt.finalize();
-          console.log('Seeded default admin user (ID: admin, Pass: apex2026)');
-        }
-      });
-      
-      // Seed another user for testing
-      db.get(`SELECT id FROM users WHERE id = ?`, ['doctor'], (err, row) => {
-        if (!row) {
-          const salt = bcrypt.genSaltSync(10);
-          const hash = bcrypt.hashSync('pass123', salt);
-          
-          const stmt = db.prepare('INSERT INTO users (id, password_hash, name, role, department) VALUES (?, ?, ?, ?, ?)');
-          stmt.run('doctor', hash, 'Dr. Pongsakorn T.', 'Radiologist', 'Neuroimaging');
-          stmt.finalize();
-          console.log('Seeded default doctor user (ID: doctor, Pass: pass123)');
+          console.log("Seeded default user (ID: smartlab, Pass: smartlab888)");
         }
       });
     });
@@ -60,30 +56,41 @@ const db = new sqlite3.Database('./apex_auth.db', (err) => {
 });
 
 // Login API Endpoint
-app.post('/api/login', (req, res) => {
+app.post("/api/login", (req, res) => {
   const { doctorId, password } = req.body;
 
   if (!doctorId || !password) {
-    return res.status(400).json({ success: false, error: 'Please provide both Hospital ID and Passcode.' });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        error: "Please provide both Hospital ID and Passcode.",
+      });
   }
 
-  db.get('SELECT * FROM users WHERE id = ?', [doctorId], (err, user) => {
+  db.get("SELECT * FROM users WHERE id = ?", [doctorId], (err, user) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ success: false, error: 'Database error occurred.' });
+      return res
+        .status(500)
+        .json({ success: false, error: "Database error occurred." });
     }
 
     if (!user) {
-      return res.status(401).json({ success: false, error: 'Invalid Hospital ID or Passcode.' });
+      return res
+        .status(401)
+        .json({ success: false, error: "Invalid Hospital ID or Passcode." });
     }
 
     // Verify password
     const isValid = bcrypt.compareSync(password, user.password_hash);
-    
+
     if (isValid) {
       // Generate JWT
-      const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '12h' });
-      
+      const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
+        expiresIn: "12h",
+      });
+
       return res.json({
         success: true,
         user: {
@@ -91,17 +98,19 @@ app.post('/api/login', (req, res) => {
           name: user.name,
           role: user.role,
           department: user.department,
-          token: token
-        }
+          token: token,
+        },
       });
     } else {
-      return res.status(401).json({ success: false, error: 'Invalid Hospital ID or Passcode.' });
+      return res
+        .status(401)
+        .json({ success: false, error: "Invalid Hospital ID or Passcode." });
     }
   });
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', service: 'APEX Auth Provider' });
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", service: "APEX Auth Provider" });
 });
 
 app.listen(PORT, () => {

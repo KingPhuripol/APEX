@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Icon, Badge, RadialGauge, Btn, Card, PageHeader, PatientStrip, StatusDot, KV } from './ui.jsx';
-import { pichaAnalyze, coreOrchestrate, ApiError } from '../lib/api.js';
+import { pichaAnalyzeStream, ApiError } from '../lib/api.js';
 
 // ============================================================
 // PICHA AI — Digital Pathology (Real API Integration)

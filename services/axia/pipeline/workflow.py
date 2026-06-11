@@ -88,7 +88,7 @@ def run_analysis(image_bytes: bytes, target_module: str) -> Stage2Findings:
     if isinstance(res, dict):
         return Stage2Findings(**res)
     else:
-        return Stage2Findings(confidence=0.5, primary_finding="Unable to parse findings.", visual_insights=[])
+        return Stage2Findings(confidence=0.5, primary_finding="Unable to parse findings.", visual_insights=[], type="indeterminate", volume=0.0)
 
 def run_critique(ocr_text: str, stage2_findings: Stage2Findings, target_module: str) -> Stage3Critique:
     prompt = (

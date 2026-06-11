@@ -1,48 +1,49 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Check localStorage for existing session
-    const storedUser = localStorage.getItem('apex-auth');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
-  }, []);
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem("apex-auth");
+    return stored ? JSON.parse(stored) : null;
+  });
+  const [loading] = useState(false);
 
   const login = async (doctorId, password) => {
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ doctorId, password })
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ doctorId, password }),
       });
       const data = await response.json();
-      
+
       if (data.success) {
         setUser(data.user);
-        localStorage.setItem('apex-auth', JSON.stringify(data.user));
+        localStorage.setItem("apex-auth", JSON.stringify(data.user));
         return { success: true };
       } else {
         return { success: false, error: data.error };
       }
-    } catch (err) {
-      return { success: false, error: 'Auth Server is unreachable. Please start services/auth' };
+    } catch {
+      return {
+        success: false,
+        error: "Auth Server is unreachable. Please start services/auth",
+      };
     }
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('apex-auth');
+    localStorage.removeItem("apex-auth");
   };
 
   if (loading) {
-    return <div className="h-screen w-screen bg-[var(--bg)] flex items-center justify-center text-[var(--text)]">Loading APEX Secure Environment...</div>;
+    return (
+      <div className="h-screen w-screen bg-[var(--bg)] flex items-center justify-center text-[var(--text)]">
+        Loading APEX Secure Environment...
+      </div>
+    );
   }
 
   return (
@@ -52,6 +53,7 @@ export function AuthProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext);
 }

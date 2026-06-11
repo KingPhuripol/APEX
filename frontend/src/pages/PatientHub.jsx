@@ -1,5 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, User, Calendar, Brain, Activity as LiverIcon, Microscope, UploadCloud, FileText, Activity } from 'lucide-react';
+import { getPatientById } from '../lib/patients';
 import AxiaModule from '../modules/AxiaModule';
 import SmartLivaModule from '../modules/SmartLivaModule';
 import PichaModule from '../modules/PichaModule';
@@ -9,9 +10,12 @@ export default function PatientHub() {
   const { id, module } = useParams();
   const navigate = useNavigate();
 
-  // Mock patient info based on HN
-  const patientName = id === 'HN-100234' ? 'Somsri Phakdee' : 
-                      id === 'HN-100235' ? 'Mana Jaidee' : 'Unknown Patient';
+  const patient = getPatientById(id);
+  const patientName = patient?.name ?? id;
+  const patientAge = patient?.age ?? '—';
+  const patientGender = patient?.gender ?? '—';
+  const patientWard = patient?.ward ?? '—';
+  const patientReferrer = patient?.referrer ?? '—';
 
   const getModuleTheme = (mod) => {
     switch (mod) {
@@ -88,9 +92,9 @@ export default function PatientHub() {
               <div className="text-xs text-[var(--text-2)] flex items-center space-x-3 mt-0.5">
                 <span className="font-mono">{id}</span>
                 <span className="text-[var(--line-strong)]">•</span>
-                <span className="font-mono">45 Yrs / F</span>
+                <span className="font-mono">{patientAge} Yrs / {patientGender}</span>
                 <span className="text-[var(--line-strong)]">•</span>
-                <span className="flex items-center font-mono"><Calendar className="w-3 h-3 mr-1 text-[var(--muted)]" /> 12/04/1981</span>
+                <span className="font-mono">{patientWard}</span>
               </div>
             </div>
           </div>
@@ -110,7 +114,7 @@ export default function PatientHub() {
       </header>
 
       {/* Main Split View */}
-      <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+      <div className="flex flex-col md:flex-row flex-1 min-h-0">
         {/* Patient Modules Sidebar */}
         <div className="w-full md:w-56 bg-[var(--surface-2)] border-b md:border-b-0 md:border-r border-[var(--line)] p-2 md:p-3 flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-1.5 z-10 overflow-x-auto md:overflow-y-auto shrink-0">
           <h3 className="hidden md:block text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest mb-1.5 px-2 mt-2">AI Diagnostics</h3>
@@ -156,7 +160,7 @@ export default function PatientHub() {
         </div>
 
         {/* Module Content Area - No padding to allow edge-to-edge dual pane */}
-        <div className="flex-1 overflow-hidden relative z-10">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden relative z-10" style={{ WebkitOverflowScrolling: 'touch' }}>
           {renderModule()}
         </div>
       </div>

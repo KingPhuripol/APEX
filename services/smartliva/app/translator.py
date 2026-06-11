@@ -47,14 +47,14 @@ class SmartLivaTranslator:
         try:
             system_prompt = self._get_medical_system_prompt(target_language, context)
             
+            model_name = os.getenv("OPENAI_MODEL", "gpt-5.4-mini-2026-03-17")
             response = self.openai_client.chat.completions.create(
-                model="gpt-4",
+                model=model_name,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": f"Translate this medical text: {text}"}
                 ],
-                temperature=0.1,
-                max_tokens=1000
+                max_completion_tokens=1000
             )
             
             translated_text = response.choices[0].message.content.strip()
@@ -179,8 +179,9 @@ class SmartLivaTranslator:
             # Use OpenAI for complex medical translations
             prompt = self._create_medical_translation_prompt(text, target_language, source_language)
             
+            model_name = os.getenv("OPENAI_MODEL", "gpt-5.4-mini-2026-03-17")
             response = await self.openai_client.chat.completions.acreate(
-                model="gpt-4",
+                model=model_name,
                 messages=[
                     {
                         "role": "system", 
@@ -188,8 +189,7 @@ class SmartLivaTranslator:
                     },
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.1,
-                max_tokens=1000
+                max_completion_tokens=1000
             )
             
             translated = response.choices[0].message.content.strip()

@@ -12,8 +12,8 @@ Model version: SmartLiva-VisionAPI-v3
 
 Required env vars:
   OPENAI_API_KEY          — OpenAI API key
-  OPENAI_VISION_MODEL     — Vision model id, default: gpt-4o
-  OPENAI_MODEL            — Chat model id, default: gpt-4o-mini
+  OPENAI_VISION_MODEL     — Vision model id, default: gpt-5.5-2026-04-23
+  OPENAI_MODEL            — Chat model id, default: gpt-5.4-mini-2026-03-17
 """
 
 from __future__ import annotations
@@ -448,12 +448,12 @@ def _system_prompt(language: str) -> str:
     return (
         "You are Dr. HepaSage (น้อง Liva), a friendly AI hepatologist assistant.\n"
         f"LANGUAGE: {lang_line}\n"
-        "ROLE: Help patients understand their liver health results simply and clearly.\n"
+        "ROLE: Help physicians and patients understand liver health results simply and clearly.\n"
         "FORMAT RULES:\n"
-        "- Be concise: keep responses under 200 words unless the user explicitly asks for more detail.\n"
-        "- Use short bullet points, bold headers, and simple plain language — avoid long paragraphs.\n"
-        "- Never repeat the same information twice.\n"
-        "- Use Markdown (bold, bullets, headers) for structure.\n"
+        "- Be concise: keep responses under 200 words unless the user asks for more detail.\n"
+        "- Use short bullet points (- ) and bold text (**) for structure — avoid long paragraphs.\n"
+        "- Never use blockquote syntax (the > character at the start of a line). Never use angle brackets.\n"
+        "- Never repeat the same information twice in one response.\n"
         "- Be warm and empathetic but get to the point quickly.\n"
         "- End with ONE short disclaimer line only."
     )
@@ -465,14 +465,14 @@ def _openai_chat(history: list, max_tokens: int, temp: float, language: str):
     api_key = os.getenv("OPENAI_API_KEY", "")
     if not api_key or "REPLACE" in api_key:
         return None, 0
-    model_name = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    model_name = os.getenv("OPENAI_MODEL", "gpt-5.4-mini-2026-03-17")
     messages = [{"role": "system", "content": _system_prompt(language)}]
     messages += [{"role": m.role, "content": m.content} for m in history]
     try:
         client = OpenAI(api_key=api_key)
         resp = client.chat.completions.create(
             model=model_name, messages=messages,
-            max_tokens=max_tokens, temperature=temp,
+            max_completion_tokens=max_tokens,
         )
         usage = resp.usage.total_tokens if resp.usage else 0
         return resp.choices[0].message.content, usage
@@ -557,9 +557,9 @@ def _engine_label() -> str:
     """Human-readable engine name for health/status endpoints."""
     mode = _get_engine_mode()
     if mode == "hybrid":
-        return "Hybrid (ConvNeXt + GPT-4o)"
+        return "Hybrid (ConvNeXt + GPT-5.5 Vision)"
     if mode == "gpt_vision":
-        return "GPT-4o Vision"
+        return "GPT-5.5 Vision"
     return "Unavailable"
 
 

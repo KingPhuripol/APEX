@@ -50,6 +50,13 @@ PORT=8005 python mock_app.py > /tmp/apex-picha.log 2>&1 &
 PICHA_PID=$!
 echo "   PID: $PICHA_PID | Log: /tmp/apex-picha.log"
 
+# ── PICHA AI Service (FastAPI :8200) ─────────────────────────
+echo "🤖 Starting PICHA AI service (7-agent pipeline, demo mode)…"
+cd "$PROJ_DIR/services/picha/ai-service"
+DEMO_MODE=true python -m uvicorn main:app --host 0.0.0.0 --port 8200 > /tmp/apex-picha-ai.log 2>&1 &
+PICHA_AI_PID=$!
+echo "   PID: $PICHA_AI_PID | Log: /tmp/apex-picha-ai.log"
+
 # ── Wait for backends ────────────────────────────────────────
 echo ""
 echo "⏳ Waiting for backends to start…"
@@ -60,6 +67,7 @@ AUTH_OK=$(curl -s http://localhost:3001/api/health 2>/dev/null | python3 -c "imp
 AXIA_OK=$(curl -s http://localhost:5001/api/health 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('✅' if d.get('status')=='ok' else '❌')" 2>/dev/null || echo "❌")
 SL_OK=$(curl -s http://localhost:8000/health 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('✅' if d.get('status')=='ok' else '❌')" 2>/dev/null || echo "❌")
 PICHA_OK=$(curl -s http://localhost:8005/health 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('✅' if d.get('status')=='ok' else '❌')" 2>/dev/null || echo "❌")
+PICHA_AI_OK=$(curl -s http://localhost:8200/health 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('✅' if d.get('status')=='ok' else '❌')" 2>/dev/null || echo "❌")
 
 echo ""
 echo "Service Status:"
@@ -67,6 +75,7 @@ echo "  Auth      (http://localhost:3001) $AUTH_OK"
 echo "  AXIA      (http://localhost:5001) $AXIA_OK"
 echo "  SmartLiva (http://localhost:8000) $SL_OK"
 echo "  PICHA     (http://localhost:8005) $PICHA_OK (Mock Mode)"
+echo "  PICHA AI  (http://localhost:8200) $PICHA_AI_OK (Demo Mode)"
 echo ""
 
 # ── Frontend ─────────────────────────────────────────────────
@@ -92,7 +101,7 @@ echo ""
 cleanup() {
   echo ""
   echo "🛑 Stopping all services…"
-  kill $AXIA_PID $SL_PID $PICHA_PID $AUTH_PID $FE_PID 2>/dev/null || true
+  kill $AXIA_PID $SL_PID $PICHA_PID $PICHA_AI_PID $AUTH_PID $FE_PID 2>/dev/null || true
   echo "✅ Done."
 }
 trap cleanup INT TERM

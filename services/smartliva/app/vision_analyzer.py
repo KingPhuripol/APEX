@@ -1,7 +1,7 @@
 """
 SmartLiva Vision Analyzer
 =========================
-GPT-4o Vision-powered liver ultrasound analyzer.
+GPT-5.5 Vision-powered liver ultrasound analyzer.
 
 Replaces the local Foundation Model (Swin V2 + MoE) with a production-ready
 Vision LLM API that delivers >90% accuracy on standard liver ultrasound
@@ -18,7 +18,7 @@ Usage:
 
 Environment variables:
     OPENAI_API_KEY          — required
-    OPENAI_VISION_MODEL     — optional, default "gpt-4o" (best accuracy)
+    OPENAI_VISION_MODEL     — optional, default "gpt-5.5-2026-04-23" (best accuracy)
     OPENAI_VISION_DETAIL    — optional, "high" | "low", default "high"
 """
 
@@ -355,7 +355,7 @@ class VisionAnalyzer:
 
     def __init__(self) -> None:
         self._client = None
-        self._model  = "gpt-4o"
+        self._model  = "gpt-5.5-2026-04-23"
         self._detail = "high"
         self._ready  = False
         self._init_client()
@@ -367,7 +367,7 @@ class VisionAnalyzer:
             if not api_key or "REPLACE" in api_key or api_key == "sk-...":
                 raise ValueError("OPENAI_API_KEY is not configured.")
             self._client = OpenAI(api_key=api_key)
-            self._model  = os.getenv("OPENAI_VISION_MODEL", "gpt-4o")
+            self._model  = os.getenv("OPENAI_VISION_MODEL", "gpt-5.5-2026-04-23")
             self._detail = os.getenv("OPENAI_VISION_DETAIL", "high")
             self._ready  = True
             logger.info("[VisionAnalyzer] Initialized — model: %s, detail: %s", self._model, self._detail)
@@ -470,8 +470,7 @@ class VisionAnalyzer:
                     },
                 ],
                 response_format={"type": "json_object"},
-                temperature=0.10,
-                max_tokens=1400,
+                max_completion_tokens=1400,
             )
         except Exception as exc:
             logger.error("[VisionAnalyzer] API call failed: %s", exc)

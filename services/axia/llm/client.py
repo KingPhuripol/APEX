@@ -11,7 +11,7 @@ class LLMClient:
     def __init__(self):
         self.primary_model = os.getenv("PRIMARY_VISION_API", "gpt-5.5-2026-04-23")
         self.critique_model = os.getenv("CRITIQUE_VISION_API", "gpt-5.4-mini-2026-03-17")
-        self.fallback_model = os.getenv("FALLBACK_VISION_API", "gpt-5.4-nano-2026-03-17")
+        self.fallback_model = os.getenv("FALLBACK_VISION_API", "gpt-5.4-2026-03-05")
         
     def _encode_image(self, image_bytes: bytes) -> str:
         return base64.b64encode(image_bytes).decode('utf-8')
@@ -63,11 +63,11 @@ class LLMClient:
             "model": target_model,
             "messages": messages,
         }
-        if "5.5" not in target_model:
+        if not any(v in target_model for v in ["gpt-5.", "o1", "o3"]):
             kwargs["temperature"] = 0.2
         
         if response_format:
-            # If the model natively supports structured outputs (e.g. OpenAI GPT-4o)
+            # If the model natively supports structured outputs (e.g. OpenAI gpt-5.x)
             # litellm translates this automatically
             kwargs["response_format"] = response_format
 

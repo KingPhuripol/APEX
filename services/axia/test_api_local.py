@@ -20,17 +20,17 @@ tests = [
     {
         "module": "axia",
         "name": "Brain CT (Hemorrhage EDH)",
-        "path": Path(__file__).parent.parent.parent / "datasetforchina" / "axia_test_images" / "hemorrhage_EDH_cq500ct109__CT000141.png"
+        "path": Path(__file__).parent.parent.parent / "datasetforchina" / "axia_test_images" / "sample01.png"
     },
     {
         "module": "picha",
         "name": "Pathology Slide (Tumor)",
-        "path": Path(__file__).parent.parent.parent / "datasetforchina" / "picha_test_images" / "TUM_TUM_2212.png"
+        "path": Path(__file__).parent.parent.parent / "datasetforchina" / "picha_test_images" / "sample01.png"
     },
     {
         "module": "smartliva",
         "name": "Liver Ultrasound (Fibrosis F3)",
-        "path": Path(__file__).parent.parent.parent / "datasetforchina" / "smartliva_test_images" / "fibrosis_test_F3_4.jpg"
+        "path": Path(__file__).parent.parent.parent / "datasetforchina" / "smartliva_test_images" / "sample01.jpg"
     }
 ]
 

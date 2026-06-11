@@ -52,8 +52,7 @@ class GroqVisionAnalyzer:
                     ],
                 }
             ],
-            temperature=0.0,
-            max_tokens=150,
+            max_completion_tokens=150,
         )
         
         result_text = response.choices[0].message.content.strip()

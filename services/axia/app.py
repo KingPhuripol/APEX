@@ -475,6 +475,8 @@ def _run_llm_pipeline_for_axia(files) -> dict:
             }
         }
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         print(f"[AXIA LLM FALLBACK] Failed: {e}. Falling back to randomized mock.")
         # Fall back to randomized mock
         rng = random.Random(len(files))

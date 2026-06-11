@@ -1,8 +1,8 @@
 FROM node:22-alpine
 WORKDIR /app
-COPY package.json ./
-RUN npm install
+COPY package*.json ./
+RUN npm install --include=dev
 COPY . .
-RUN npm run build
+RUN npx tsc
 EXPOSE 3005
 CMD ["node", "dist/server.js"]
